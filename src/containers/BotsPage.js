@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import BotCollection from "./BotCollection";
 import YourBotArmy from "./YourBotArmy";
+import BotSpecs from "../components/BotSpecs";
 
 const API = "http://localhost:6001/bots";
 class BotsPage extends Component {
@@ -10,6 +11,8 @@ class BotsPage extends Component {
     this.state = {
       bots: [],
       army: [],
+      viewSpec: false,
+      activeBot: null,
     };
   }
 
@@ -24,6 +27,9 @@ class BotsPage extends Component {
   }
   addToArmy = (bot) => {
     // only add if army doesnt already have selected bot
+    if (this.state.viewSpec) {
+      this.toggleSpec(bot);
+    }
     if (!this.state.army.some((b) => b.id == bot.id)) {
       this.setState({
         army: [...this.state.army, bot],
@@ -54,6 +60,34 @@ class BotsPage extends Component {
       .catch((err) => console.log(err));
   };
 
+  toggleSpec = (bot) => {
+    this.setState({
+      viewSpec: !this.state.viewSpec,
+      activeBot: bot,
+    });
+  };
+
+  displayBot = () => {
+    if (this.state.viewSpec) {
+      return (
+        <BotSpecs
+          toggleSpec={this.toggleSpec}
+          addToArmy={this.addToArmy}
+          bot={this.state.activeBot}
+        />
+      );
+    } else {
+      return (
+        <BotCollection
+          bots={this.state.bots}
+          viewSpec={this.state.viewSpec}
+          toggleSpec={this.toggleSpec}
+          addToArmy={this.addToArmy}
+          handleDischarge={this.handleDischarge}
+        />
+      );
+    }
+  };
   render() {
     return (
       <div>
@@ -62,11 +96,7 @@ class BotsPage extends Component {
           removeFromArmy={this.removeFromArmy}
           handleDischarge={this.handleDischarge}
         />
-        <BotCollection
-          bots={this.state.bots}
-          addToArmy={this.addToArmy}
-          handleDischarge={this.handleDischarge}
-        />
+        {this.displayBot()}
       </div>
     );
   }
