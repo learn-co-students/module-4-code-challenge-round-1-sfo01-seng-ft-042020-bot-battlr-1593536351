@@ -9,16 +9,23 @@ const botTypeClasses = {
   Captain: "icon star"
 };
 
+const swapImage = (event) => {
+  const imgs = ['/justin.jpg', '/oller.jpeg', '/campbell.jpeg']
+  event.target.onError = null; //prevent infinite loop if below img src re-assignment fails
+  const idx = ~~(Math.random() * imgs.length)
+  event.target.src=imgs[idx] 
+}
+
 const BotCard = props => {
   return (
     <div className="ui column">
       <div
         className="ui card"
         key={props.bot.id}
-        onClick={() => console.log("add code to connect event listener")}
+        onClick={() => props.click(props.bot)}
       >
         <div className="image">
-          <img alt="oh no!" src={props.bot.avatar_url} />
+          <img alt="oh no!" src={props.bot.avatar_url} onError={(e) => swapImage(e)} />
         </div>
         <div className="content">
           <div className="header">
@@ -47,8 +54,8 @@ const BotCard = props => {
             <div className="ui center aligned segment basic">
               <button
                 className="ui mini red button"
-                onClick={() =>
-                  console.log("add code to connect event listener")
+                onClick={(e) =>
+                  props.destroy(e, props.bot.id)
                 }
               >
                 x
