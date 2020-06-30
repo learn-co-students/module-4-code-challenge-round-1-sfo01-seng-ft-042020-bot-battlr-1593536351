@@ -2,12 +2,14 @@ import React, { Component } from "react";
 
 import BotCollection from './BotCollection'
 import YourBotArmy from './YourBotArmy'
-
+import BotSpecs from '../components/BotSpecs'
 
 class BotsPage extends Component {
   state = {
     bots: [],
-    myBots: []
+    myBots: [],
+    selectedBot: [],
+    botSelected: false
   }
 
   componentDidMount() {
@@ -22,9 +24,25 @@ class BotsPage extends Component {
     if (!currArmy.includes(bot)) {    //no duplicate bots
       currArmy.push(bot)              
       this.setState({
-        myBots: currArmy
+        myBots: currArmy,
+        botSelected: false,
+        selectedBot: null
       });
     }
+  }
+
+  showBotDetails = (bot) => {
+    this.setState({
+      botSelected: true,
+      selectedBot: bot
+    })
+  }
+
+  reset = () => {
+    this.setState({
+      botSelected: false,
+      selectedBot: null
+    })
   }
 
   removeBot = (byeBot) => {
@@ -55,13 +73,22 @@ class BotsPage extends Component {
       .then(resp=>console.log(`Deleting Robot ID#${id}  Status: ${resp.statusText}`))  //logs OK or Not Found
   }
 
+  botOrNot = () => {
+    if (this.state.botSelected) {
+      const enlisted = this.state.myBots.includes(this.state.selectedBot)
+      return <BotSpecs enlisted={enlisted} enlist={this.addBot} return={this.reset} bot={this.state.selectedBot} />
+    } else {
+      return <BotCollection destroy={this.decomissionBot} click={this.showBotDetails} bots={this.state.bots} />
+    }
+  }
+
   render() {
     return (
             <div>
               <YourBotArmy destroy={this.decomissionBot} click={this.removeBot} bots={this.state.myBots} />
-              <BotCollection destroy={this.decomissionBot} click={this.addBot} bots={this.state.bots} />
+              {this.botOrNot()}
             </div>
-    )}
+    )}                           // ^^ botOrNot conditionally displays BotSpecs pane or all view pane   React Router would be superior
 }
 
 export default BotsPage;

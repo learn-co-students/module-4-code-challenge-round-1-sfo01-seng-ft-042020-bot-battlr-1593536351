@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import BotCard from '../components/BotCard'
 
 class BotCollection extends Component {
-  //your code here
 
   render() {
     return (
