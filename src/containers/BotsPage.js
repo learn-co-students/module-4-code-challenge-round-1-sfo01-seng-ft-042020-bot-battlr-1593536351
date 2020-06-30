@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import BotCollection from "./BotCollection";
 import YourBotArmy from "./YourBotArmy";
 import BotSpecs from "../components/BotSpecs";
+import SortBar from "../components/SortBar";
 
 const API = "http://localhost:6001/bots";
 class BotsPage extends Component {
@@ -13,6 +14,7 @@ class BotsPage extends Component {
       army: [],
       viewSpec: false,
       activeBot: null,
+      filters: [],
     };
   }
 
@@ -30,7 +32,7 @@ class BotsPage extends Component {
     if (this.state.viewSpec) {
       this.toggleSpec(bot);
     }
-    if (!this.state.army.some((b) => b.id == bot.id)) {
+    if (!this.state.army.some((b) => b.id === bot.id)) {
       this.setState({
         army: [...this.state.army, bot],
       });
@@ -67,6 +69,24 @@ class BotsPage extends Component {
     });
   };
 
+  filterBots = () => {
+    let filteredBots = this.state.bots;
+    if (this.state.filters.length) {
+      filteredBots = this.state.bots.filter((bot) =>
+        this.state.filters.includes(bot.bot_class)
+      );
+    }
+    return filteredBots;
+  };
+
+  updateFilter = (e) => {
+    const selection = e.target.innerText;
+    console.dir(e.target);
+    return this.setState({
+      filters: [...this.state.filters, selection],
+    });
+  };
+
   displayBot = () => {
     if (this.state.viewSpec) {
       return (
@@ -78,13 +98,18 @@ class BotsPage extends Component {
       );
     } else {
       return (
-        <BotCollection
-          bots={this.state.bots}
-          viewSpec={this.state.viewSpec}
-          toggleSpec={this.toggleSpec}
-          addToArmy={this.addToArmy}
-          handleDischarge={this.handleDischarge}
-        />
+        <div>
+          <SortBar updateFilter={this.updateFilter} />
+          <BotCollection
+            // partial implementation of filterbots complete.. commenting out for now
+            // bots={this.filterBots()}
+            bots={this.state.bots}
+            viewSpec={this.state.viewSpec}
+            toggleSpec={this.toggleSpec}
+            addToArmy={this.addToArmy}
+            handleDischarge={this.handleDischarge}
+          />
+        </div>
       );
     }
   };
